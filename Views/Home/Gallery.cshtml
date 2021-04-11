@@ -1,0 +1,43 @@
+﻿@model MercyProject.ViewModel.Gallery
+
+<h4>Uploading Page</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form enctype="multipart/form-data" asp-action="Gallery">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-grou">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group custom-file">
+                <input asp-for="Photo" class="form-control custom-file-input input" />
+                <label asp-for="Photo" class="custom-file-label">Choose File...</label>
+                @*<span asp-validation-for="Photo" class="text-danger"></span>*@
+            </div>
+            <br><br><br>
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('.input').on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).next('.custom-file-label').html(fileName);
+            })
+            //alert("sdfd")
+        })
+    </script>
+}
