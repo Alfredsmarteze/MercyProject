@@ -40,9 +40,9 @@ namespace MercyProject.Controllers
        
         //Get a product to edit
         [HttpGet]
-        public IActionResult Edit( int id)
+        public async Task<IActionResult> Edit( int id)
         {
-            Galleries galleries1 = mercyContext1.Galleries.Find(id);
+            /*Galleries*/var  galleries1 =  mercyContext1.Galleries.Find(id);
 
             ViewEditModel viewEditModel = new ViewEditModel
             {
@@ -61,7 +61,7 @@ namespace MercyProject.Controllers
             
             if (ModelState.IsValid)
             {
-                Galleries galleries = mercyContext1.Galleries.Find(viewEditModel.Id);
+                var galleries = mercyContext1.Galleries.Find(viewEditModel.Id);
                 galleries.Id = viewEditModel.Id;
                 galleries.Name = viewEditModel.Name;
                 if (viewEditModel.Photo !=null)
@@ -70,16 +70,16 @@ namespace MercyProject.Controllers
                     {
                       string file=  Path.Combine(iwebHostEnvironment.WebRootPath, "images", 
                           viewEditModel.CurrentPhoto);
-                        //if (file!=null)
-                        //{
+                        if (file != null)
+                        {
                             System.IO.File.Delete(file);
-                        //}
-                        //else
-                        //{
-                        //    return View("Picture already Exist.");
-                        //}
-                        
                     }
+                    else
+                    {
+                        return View("Picture already Exist.");
+                    }
+
+                }
                     galleries.Photo= NewMethod(viewEditModel);
                 }
                 mercyContext1.Update(galleries);
@@ -110,50 +110,85 @@ namespace MercyProject.Controllers
         }
 
 
-        //Delete product
+       
+
         [HttpGet]
-        public IActionResult Delete(int id)
+        public IActionResult Gallery()
         {
-            var remove = mercyContext1.Galleries.FirstOrDefault(q=>q.Id==id);
-                       
-            return View(remove);
-        }
-
-
-        //Delete product
-       [HttpPost]
-        public IActionResult Delete( DeleteModel deleteModel, ViewEditModel viewEditModel, int id)
-        {
-            Galleries remove = mercyContext1.Galleries.Find(id);
-
-
-            DeleteModel deleteModel1 = new DeleteModel
-            {
-                Id = remove.Id,
-                Name = remove.Name,
-                DeletePhoto = remove.Photo
-            };
-
-            string upload = Path.Combine(iwebHostEnvironment.WebRootPath, "images");
-          string  uniqueName = Guid.NewGuid().ToString() + "_" + deleteModel.Photo.FileName;
-            string filePath = Path.Combine(upload, uniqueName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                deleteModel.Photo.CopyTo(fileStream);
-            }
-
-            var sd = Path.Combine(iwebHostEnvironment.WebRootPath, "images", deleteModel.DeletePhoto);
-            if(System.IO.File.Exists(sd))
-            System.IO.File.Delete(sd);
-            mercyContext1.Galleries.Remove(remove);
-            mercyContext1.SaveChanges();
-            
-            RedirectToAction("UploadInfo", "Account");
-           
             return View();
         }
 
-        //List of uploaded info
+        //Upload a product
+        [HttpPost]
+        public IActionResult Gallery(Gallery gallery, int id)
+        {
+            if (ModelState.IsValid)
+            {
+                string uniqueFileName = null;
+                uniqueFileName = MethodExtraction(gallery, uniqueFileName);
+                Galleries galleris = new Galleries
+                {
+                    Id = gallery.Id,
+                    Name = gallery.Name,
+                    Photo = uniqueFileName,
+                };
+                mercyContext1.Add(galleris);
+                mercyContext1.SaveChanges();
+
+                return RedirectToAction("UploadInfo", "Account", new {id=gallery.Id });
+            }
+            return View();
+        }
+
+        //Quick action and refactory method
+        private string MethodExtraction(Gallery gallery, string uniqueFileName)
+        {
+            if (gallery.Photo != null)
+            {
+                string upload = Path.Combine(iwebHostEnvironment.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + gallery.Photo.FileName;
+                string filePath = Path.Combine(upload, uniqueFileName);
+                using (var fileStream= new FileStream(filePath, FileMode.Create))
+                {
+                    gallery.Photo.CopyTo(fileStream);
+                }
+            }
+
+            return uniqueFileName;
+        }
+
+
+        //Get product to delete
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var remove = mercyContext1.Galleries.FirstOrDefault(q => q.Id == id);
+
+            return View(remove);
+        }
+
+        //Delete product
+        [HttpPost]
+        public IActionResult Delete(DeleteModel deletemodel, Gallery galleries, ViewEditModel viewEditModel, int id)
+        { 
+                        
+
+            var remove = mercyContext1.Galleries.Find(id);
+            string sd =Path.Combine(iwebHostEnvironment.WebRootPath,"images", remove.Photo);
+            if(sd !=null)
+            {
+                System.IO.File.Delete(sd);
+            }
+          
+
+            mercyContext1.Galleries.Remove(remove);
+            mercyContext1.SaveChanges();
+
+          return  RedirectToAction("UploadInfo");
+
+        }
+
+       //List of product
         public IActionResult UploadInfo()
         {
            var getList= this.mercyContext1.Galleries.ToList();
@@ -182,6 +217,17 @@ namespace MercyProject.Controllers
                 return View();
             }
           
+        }
+
+        public async Task<IActionResult> AddProduct(Products products)
+        {
+            if (ModelState.IsValid)
+            {
+                mercyContext1.Products.Add(products);
+                await mercyContext1.SaveChangesAsync();
+             return   RedirectToAction("Index", "Home");
+            }
+            return View();
         }
     }
 }

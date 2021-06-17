@@ -18,6 +18,7 @@ namespace MercyProject.Data
 
         public DbSet<MercyProject.Models.Galleries> Galleries { get; set; }
         public DbSet<ViewModel.ViewDetails> ViewDetails { get; set; }
+        public DbSet<ViewModel.Products> Products  { get; set; }
         //public DbSet<OurGallerry> ourGallerries { get; set; }
     }
 }

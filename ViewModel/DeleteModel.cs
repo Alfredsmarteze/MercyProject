@@ -1,4 +1,5 @@
 ﻿using MercyProject.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace MercyProject.ViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string DeletePhoto { get; set; }
+        public IFormFile DeletePhoto { get; set; }
+
+        
     }
 }

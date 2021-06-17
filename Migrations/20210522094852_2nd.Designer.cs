@@ -4,14 +4,16 @@ using MercyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MercyProject.Migrations
 {
     [DbContext(typeof(MercyContext))]
-    partial class MercyContextModelSnapshot : ModelSnapshot
+    [Migration("20210522094852_2nd")]
+    partial class _2nd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

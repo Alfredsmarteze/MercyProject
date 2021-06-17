@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<MercyProject.Models.Galleries>
-
+@{
+    var displayImage= "~/images/";
+} 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Gallery">Add Product</a>
 </p>
 
 
@@ -14,7 +16,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Photo)
             </th>
-            <th></th>
+            @*<th></th>*@
         </tr>
     </thead>
     <tbody>
@@ -27,7 +29,7 @@
                 @Html.DisplayFor(modelItem => item.Photo)
             </td>
            <td> 
-             <img src="@("~/images/"+ item.Photo)" asp-append-version="true" height="150" width="150"/>
+               <img src="@(displayImage + item.Photo)  " asp-append-version="true" height="150" width="150"/>
                </td>
             <td>
                 <a asp-action="Edit" asp-controller="Account" asp-route-id="@item.Id">Edit</a> |

@@ -17,15 +17,12 @@ namespace MercyProject.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly MercyContext _mercyContext;
-       // private readonly IHostingEnvironment _hostingEnvironment1;
         private readonly IWebHostEnvironment _webHostEnvironment;
         public HomeController(ILogger<HomeController> logger, MercyContext mercyContext
             , IWebHostEnvironment webHostEnvironment)
-        //IHostingEnvironment hostingEnvironment
         {
             _logger = logger;
             _mercyContext = mercyContext;
-          //  _hostingEnvironment1 = hostingEnvironment;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -41,7 +38,7 @@ namespace MercyProject.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> YourMessage(HowCanWeHelpYou howCanWeHelpYou)
         {
             if (ModelState.IsValid)
@@ -50,7 +47,7 @@ namespace MercyProject.Controllers
                 await _mercyContext.SaveChangesAsync();
                 ModelState.Clear();
                 ViewData["Message"] = "Thank you, we have recieved your message.";
-                RedirectToAction("Index", "Home");
+             return   RedirectToAction("Index", "Home");
 
             }
             else
@@ -63,51 +60,12 @@ namespace MercyProject.Controllers
             return View();
         }
 
+       
         [HttpGet]
         public IActionResult Gallery()
         {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Gallery( Gallery gallery)
-        {
-            if (ModelState.IsValid)
-            {
-                string uniqueFileName = null;
-                uniqueFileName = MethodExtraction(gallery, uniqueFileName);
-                Galleries galleris = new Galleries
-                {
-                    Id = gallery.Id,
-                    Name = gallery.Name,
-                    Photo = uniqueFileName,
-                };
-                _mercyContext.Add(galleris);
-                _mercyContext.SaveChanges();
-
-                return RedirectToAction("Index");
-            }
-            return View();
-        }
-
-        private string MethodExtraction(Gallery gallery, string uniqueFileName)
-        {
-            if (gallery.Photo != null)
-            {
-                string upload = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                uniqueFileName = Guid.NewGuid().ToString() + "_" + gallery.Photo.FileName;
-                string filePath = Path.Combine(upload, uniqueFileName);
-                gallery.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
-            }
-
-            return uniqueFileName;
-        }
-
-        [HttpGet]
-        public IActionResult UploadDetails(int? id)
-        {
-            var asd=this._mercyContext.Galleries.FirstOrDefault(s => s.Id == id);
-            return View("UploadDetails",asd);
+            var asd=this._mercyContext.Galleries.ToList();
+            return View(asd);
         }
         
         public IActionResult Privacy()

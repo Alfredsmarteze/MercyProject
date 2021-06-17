@@ -27,6 +27,7 @@ namespace MercyProject.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Galleries.ToListAsync());
+
         }
 
         // GET: Galleries/Details/5
@@ -67,8 +68,8 @@ namespace MercyProject.Controllers
                 string fileName = Path.GetFileNameWithoutExtension(galleries.Image.FileName);
                 string extension = Path.GetExtension(galleries.Image.FileName);
                 string path = Path.Combine(webroothpath + "/images/", fileName);
-               galleries.Photo=fileName+fileName + extension;
-                using (var filestream= new FileStream(path, FileMode.Create))
+                galleries.Photo = fileName + fileName + extension;
+                using (var filestream = new FileStream(path, FileMode.Create))
                 {
                     await galleries.Image.CopyToAsync(filestream);
                 }
